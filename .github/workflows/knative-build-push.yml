@@ -1,11 +1,13 @@
-name: Build and Push Knative Function
+name: Build and Push Knative Functions
 
 on:
   push:
     branches: [ main ]
-    # paths:
-    #   - 'myconfig/**'
   workflow_dispatch:
+    inputs:
+      function_path:
+        description: 'Function path to build and deploy (leave empty for all functions)'
+        required: false
 
 jobs:
   build-and-push:
@@ -29,21 +31,62 @@ jobs:
           chmod +x func
           sudo mv func /usr/local/bin/func
 
-      - name: Build and push function
+      - name: Find and process functions
         run: |
-          cd myconfig
-          # Update the version/tag in func.yaml
-          VERSION="v1.0.$(date +%Y%m%d%H%M%S)"
-          sed -i "s|docker.io/zoftdev/myconfig:v1.0.1|docker.io/zoftdev/myconfig:$VERSION|g" func.yaml
+          # Function to check if Docker image exists
+          function image_exists() {
+            local image_tag=$1
+            # Extract username, repository and tag
+            local repo_tag=${image_tag#*/}
+            local repo=${repo_tag%:*}
+            local tag=${repo_tag#*:}
+            
+            # Check if image exists using Docker Hub API
+            http_code=$(curl -s -o /dev/null -w "%{http_code}" \
+              "https://hub.docker.com/v2/repositories/${repo}/tags/${tag}/")
+            
+            if [ "$http_code" -eq 200 ]; then
+              return 0  # Image exists
+            else
+              return 1  # Image doesn't exist
+            fi
+          }
           
-          # Build and push the function
-          func build --push
+          # Determine which functions to process
+          if [ -n "${{ github.event.inputs.function_path }}" ]; then
+            # Use manually specified function path
+            FUNCTION_DIRS="${{ github.event.inputs.function_path }}"
+          else
+            # Find all directories with func.yaml
+            FUNCTION_DIRS=$(find . -name "func.yaml" -type f | xargs dirname | sort)
+          fi
           
-          # Create a tag for this version
-          echo "FUNCTION_VERSION=$VERSION" >> $GITHUB_ENV
+          # Process each function
+          for DIR in $FUNCTION_DIRS; do
+            echo "Processing function in $DIR"
+            cd $GITHUB_WORKSPACE
+            cd $DIR
+            
+            # Extract image tag from func.yaml
+            IMAGE_TAG=$(grep "image:" func.yaml | awk '{print $2}')
+            
+            if [ -z "$IMAGE_TAG" ]; then
+              echo "Warning: No image tag found in $DIR/func.yaml, skipping"
+              continue
+            fi
+            
+            echo "Found image tag: $IMAGE_TAG"
+            
+            # Check if image already exists
+            if image_exists "$IMAGE_TAG"; then
+              echo "Image $IMAGE_TAG already exists, skipping build"
+            else
+              echo "Building and pushing $IMAGE_TAG"
+              # Build and push the function
+              func build --push
+            fi
+          done
 
-      # Optional: Deploy to Knative cluster if needed 
-      # Uncomment this step if you want automatic deployment
       - name: Deploy to Knative Cluster
         if: ${{ github.ref == 'refs/heads/main' }}
         env:
@@ -51,5 +94,28 @@ jobs:
         run: |
           mkdir -p $HOME/.kube
           echo "$KUBECONFIG_DATA" > $HOME/.kube/config
-          cd myconfig
-          func deploy --push=false 
+          
+          # Determine which functions to deploy
+          if [ -n "${{ github.event.inputs.function_path }}" ]; then
+            # Use manually specified function path
+            FUNCTION_DIRS="${{ github.event.inputs.function_path }}"
+          else
+            # Find all directories with func.yaml
+            FUNCTION_DIRS=$(find . -name "func.yaml" -type f | xargs dirname | sort)
+          fi
+          
+          # Deploy each function
+          for DIR in $FUNCTION_DIRS; do
+            cd $GITHUB_WORKSPACE
+            cd $DIR
+            
+            # Extract image tag from func.yaml
+            IMAGE_TAG=$(grep "image:" func.yaml | awk '{print $2}')
+            
+            if [ -z "$IMAGE_TAG" ]; then
+              echo "Warning: No image tag found in $DIR/func.yaml, skipping deployment"
+              continue
+            fi
+            
+            echo "Deploying function from $DIR with image $IMAGE_TAG"
+            func deploy --push=false 
