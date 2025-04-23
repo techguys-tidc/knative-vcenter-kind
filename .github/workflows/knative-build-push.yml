@@ -86,7 +86,7 @@ jobs:
             else
               echo "Building and pushing $IMAGE_TAG"
               # Build and push the function
-              func build --push
+              func deploy --build
             fi
           done
  
