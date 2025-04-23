@@ -14,7 +14,7 @@ build:
   builder: ""
   buildEnvs: []
 run:
-  envs:
+  envs: 
   # cluster  
   - value: '{{ secret:myfunc-secret }}'
   - value: '{{ configMap:myfunc-config }}'
@@ -26,4 +26,3 @@ run:
 
 deploy:
   namespace: demo
-  image: docker.io/zoftdev/myconfig@sha256:ffa70029a7eb96cb3de7e2c6c76866d5d07d499a3cdb2026528fca6c28d6a7eb

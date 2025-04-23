@@ -1,0 +1,55 @@
+name: Build and Push Knative Function
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'myconfig/**'
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Install Knative func CLI
+        run: |
+          curl -L -o func https://github.com/knative/func/releases/download/knative-v1.9.2/func_linux_amd64
+          chmod +x func
+          sudo mv func /usr/local/bin/func
+
+      - name: Build and push function
+        run: |
+          cd myconfig
+          # Update the version/tag in func.yaml
+          VERSION="v1.0.$(date +%Y%m%d%H%M%S)"
+          sed -i "s|docker.io/zoftdev/myconfig:v1.0.1|docker.io/zoftdev/myconfig:$VERSION|g" func.yaml
+          
+          # Build and push the function
+          func build --push
+          
+          # Create a tag for this version
+          echo "FUNCTION_VERSION=$VERSION" >> $GITHUB_ENV
+
+      # Optional: Deploy to Knative cluster if needed 
+      # Uncomment this step if you want automatic deployment
+      # - name: Deploy to Knative Cluster
+      #   if: ${{ github.ref == 'refs/heads/main' }}
+      #   env:
+      #     KUBECONFIG_DATA: ${{ secrets.KUBECONFIG }}
+      #   run: |
+      #     mkdir -p $HOME/.kube
+      #     echo "$KUBECONFIG_DATA" > $HOME/.kube/config
+      #     cd myconfig
+      #     func deploy --push=false 
