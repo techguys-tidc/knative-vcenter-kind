@@ -3,8 +3,8 @@ name: Build and Push Knative Function
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'myconfig/**'
+    # paths:
+    #   - 'myconfig/**'
   workflow_dispatch:
 
 jobs:
