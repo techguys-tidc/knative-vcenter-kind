@@ -36,6 +36,8 @@ jobs:
         env:
           KUBECONFIG_DATA: ${{ secrets.KUBECONFIG }}
         run: |
+          mkdir -p $HOME/.kube
+          echo "$KUBECONFIG_DATA" > $HOME/.kube/config
           # Function to check if Docker image exists
           function image_exists() {
             local image_tag=$1
