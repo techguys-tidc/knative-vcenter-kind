@@ -1,7 +1,7 @@
 specVersion: 0.36.0
 name: myconfig
 runtime: python
-image: docker.io/zoftdev/myconfig:v1.0.2
+image: docker.io/zoftdev/myconfig:v1.0.3
 namespace: demo
 created: 2025-04-22T14:43:12.896444269+07:00
 build:
