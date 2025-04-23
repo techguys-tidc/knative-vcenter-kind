@@ -1,0 +1,29 @@
+specVersion: 0.36.0
+name: myconfig
+runtime: python
+image: docker.io/zoftdev/myconfig:v1.0.1
+namespace: demo
+created: 2025-04-22T14:43:12.896444269+07:00
+build:
+  #builder: pack
+  git:
+    url: https://github.com/zoftdev/knative-test-config.git
+    revision: main                                    # optional, git revision to be used (branch, tag, commit)
+    # contextDir: myfunction                          # optional, needed only if the function is not located in the repository root folder
+  buildpacks: []
+  builder: ""
+  buildEnvs: []
+run:
+  envs:
+  # cluster  
+  - value: '{{ secret:myfunc-secret }}'
+  - value: '{{ configMap:myfunc-config }}'
+  # local
+  # - name: MODEL_THRESHOLD
+  #   value: '1'
+  # - name: API_KEY
+  #   value: 'local-testing-key'
+
+deploy:
+  namespace: demo
+  image: docker.io/zoftdev/myconfig@sha256:ffa70029a7eb96cb3de7e2c6c76866d5d07d499a3cdb2026528fca6c28d6a7eb

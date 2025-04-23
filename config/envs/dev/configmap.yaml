@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: myfunc-config
+data:
+  MODEL_THRESHOLD: "0.75"
+  LOG_LEVEL: "debug"
