@@ -86,7 +86,7 @@ jobs:
             if image_exists "$IMAGE_TAG"; then
               echo "Image $IMAGE_TAG already exists, skipping build"
               echo "Deploying existing image $IMAGE_TAG"
-              func deploy --no-build
+              func deploy
             else
               echo "Building and pushing $IMAGE_TAG"
               # Build and push the function
