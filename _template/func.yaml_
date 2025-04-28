@@ -1,0 +1,32 @@
+
+
+# this is practice
+# set image repo
+image: docker.io/zoftdev/myfunc:v1.0.1
+
+# to set scaling
+deploy
+  annotations:
+    autoscaling.knative.dev/minScale: "1"
+ 
+#set var
+envs:
+# cluster  
+
+- name: EXAMPLE1 
+  value: value
+- name: EXAMPLE2 
+  value: '{{ env:LOCAL_ENV_VALUE }}'
+- name: EXAMPLE3 
+  value: '{{ secret:mysecret:key }}'
+- name: EXAMPLE4 
+  value: '{{ configMap:myconfigmap:key }}'
+- value: '{{ secret:mysecret2 }}' 
+- value: '{{ configMap:myconfigmap2 }}' 
+
+
+  # local
+  - name: MODEL_THRESHOLD
+    value: '1'
+  - name: API_KEY
+    value: 'local-testing-key'
