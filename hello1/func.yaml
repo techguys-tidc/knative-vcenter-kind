@@ -4,3 +4,12 @@ specVersion: 0.36.0
 name: hello1
 runtime: python
 created: 2025-04-28T07:54:11.008289653Z
+# set image repo
+image: docker.io/tidctechguys/kn-hello1:v1.0.1
+
+# to set scaling
+deploy:
+  namespace: demo
+  options:
+    scale:
+      min: 1

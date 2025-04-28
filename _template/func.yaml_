@@ -5,9 +5,12 @@
 image: docker.io/zoftdev/myfunc:v1.0.1
 
 # to set scaling
-deploy
-  annotations:
-    autoscaling.knative.dev/minScale: "1"
+deploy:
+  namespace: demo
+  options:
+    scale:
+      min: 1
+
  
 #set var
 envs:
