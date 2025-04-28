@@ -2,7 +2,7 @@ specVersion: 0.36.0
 name: fn2
 runtime: python
 created: 2025-04-23T14:53:30.325303496+07:00
-image: docker.io/tidctechguys/fn2:v1.0.3
+image: docker.io/tidctechguys/fn2:v1.0.4
 deploy:
   namespace: demo
   annotations:
