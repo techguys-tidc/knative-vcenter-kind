@@ -1,9 +1,13 @@
 specVersion: 0.36.0
 name: fn2
 runtime: python
-created: 2025-04-23T14:53:30.325303496+07:00
 image: docker.io/tidctechguys/fn2:v1.0.4
+namespace: demo
+created: 2025-04-23T14:53:30.325303496+07:00
+build:
+  builder: pack
 deploy:
   namespace: demo
-  annotations:
-    autoscaling.knative.dev/minScale: "1"  
+  options:
+    scale:
+      min: 1
