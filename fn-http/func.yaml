@@ -1,15 +1,8 @@
 specVersion: 0.36.0
-name: fn-flask
+name: fn-http
 runtime: python
-created: 2025-04-29T08:20:04.974852541+07:00
-run:
-  envs:
-  - name: APP_MODULE
-    value: func:application
-# this is practice
-# set image repo
-image: docker.io/tidctechguys/fn-flask:v1.0.1
-
+created: 2025-04-29T13:56:49.197665533+07:00
+image: docker.io/tidctechguys/fn-http:v1.0.1
 # to set scaling
 deploy:
   namespace: demo
