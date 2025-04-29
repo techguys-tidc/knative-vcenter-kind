@@ -10,6 +10,10 @@ deploy:
   options:
     scale:
       min: 1
+# default health check endpoint is /health/readiness and /health/liveness     
+  healthEndpoints:
+    readiness: /
+    liveness: /
 
  
 #set var
