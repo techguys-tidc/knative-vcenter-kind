@@ -16,4 +16,7 @@ deploy:
   options:
     scale:
       min: 1
+  healthEndpoints:
+    readiness: /
+    liveness: /
 
