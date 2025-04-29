@@ -2,7 +2,7 @@
 
 # this is practice
 # set image repo
-image: docker.io/zoftdev/myfunc:v1.0.1
+image: docker.io/tidctechguys/myfunc:v1.0.1
 
 # to set scaling
 deploy:

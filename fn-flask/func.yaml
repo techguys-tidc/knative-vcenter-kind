@@ -1,0 +1,19 @@
+specVersion: 0.36.0
+name: fn-flask
+runtime: python
+created: 2025-04-29T08:20:04.974852541+07:00
+run:
+  envs:
+  - name: APP_MODULE
+    value: func:application
+# this is practice
+# set image repo
+image: docker.io/tidctechguys/fn-flask:v1.0.1
+
+# to set scaling
+deploy:
+  namespace: demo
+  options:
+    scale:
+      min: 1
+
